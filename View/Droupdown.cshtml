@@ -1,0 +1,104 @@
+﻿@model WebApplication1.Models.DroupdownModel
+@{
+    ViewData["Title"] = "Droupdown";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4 class="text-danger text-center mt-4">Cashcading Droupdown</h4>
+<div class="row g-3">
+    <div class="col-md-4"></div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <label for="validationCustom01" class="form-label">Country name</label>
+                <select class="form-select" id="Country">
+                </select>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+             
+                <br />
+                <label for="validationCustom01" class="form-label">State name</label>
+                <select class="form-select" id="State">
+                </select>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+                <br /> 
+                <label for="validationCustom01" class="form-label">City name</label>
+                <select class="form-select" id="City">
+                </select>
+                <div class="valid-feedback">
+                    Looks good!
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4"></div>
+</div>
+
+    
+@section scripts {
+
+    <script>
+        $(document).ready(function () {
+            CountryList();
+            $("#State").attr("disabled", true)
+            $("#City").attr("disabled", true)
+            $("#State").empty()
+            $("#City").empty()
+          $("#Country").change(function(){
+                $("#State").attr("disabled", false)
+                $("#State").empty()
+                $("#City").empty()
+              var id =$(this).val();
+              //$("#State").empty();
+              //$("#City").empty();
+              $("#State").append('<option> --- Select State--- </option>')
+                $.ajax({
+                    type: 'POST',
+                    url: '/Session/GetState?id='+id,
+                    success: function (data) {
+                        $.each(data, function (index, row) {
+                            $("#State").append("<option value='" + row.id + "'>" + row.stateName + "</option>")
+                        });
+                    }
+                });
+          });
+          $("#State").change(function () {
+                $("#City").attr("disabled", false)
+                $("#City").empty()
+              var id =$(this).val();
+              //$("#City").empty();
+              $("#City").append('<option > --- Select City-- - </option>')
+                $.ajax({
+                    type: 'POST',
+                    url: '/Session/GetCity?id='+id,
+                    success: function (data) {
+                        $.each(data, function (index, row) {
+                            $("#City").append("<option value='" + row.id + "'>" + row.cityName + "</option>")
+                        });
+                    }
+                });
+          });
+
+
+        });
+    </script>
+    <script>
+      function CountryList() {
+            $("#Country").append('<option >--- বিভাগের নাম ---</option>')
+        $.ajax({
+            type: 'GET',
+            url: '/Session/GetCountry',
+            success: function (data) {
+                $.each(data, function (index, row) {
+                    $("#Country").append("<option value='" + row.id + "'>" + row.countryName + "</option>")
+                });
+            }
+        });
+      }
+    </script>
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
